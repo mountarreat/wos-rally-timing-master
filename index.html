@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rally Timing Master</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding: 20px;
+        }
+        .container {
+            background-color: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            padding: 20px;
+            max-width: 1000px;
+            width: 100%;
+        }
+        h1 {
+            color: #4a4a4a;
+            font-weight: 700;
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: 2rem;
+        }
+        .form-label {
+            font-weight: 600;
+            color: #4a4a4a;
+            font-size: 0.9rem;
+        }
+        .form-control {
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            padding: 8px;
+            transition: all 0.3s;
+            font-size: 0.9rem;
+        }
+        .form-control:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.2rem rgba(102,126,234,0.25);
+        }
+        .btn {
+            border-radius: 10px;
+            padding: 8px 16px;
+            font-weight: 600;
+            transition: all 0.3s;
+            font-size: 0.9rem;
+        }
+        .btn-primary {
+            background-color: #667eea;
+            border-color: #667eea;
+        }
+        .btn-primary:hover {
+            background-color: #5a6fd5;
+            border-color: #5a6fd5;
+        }
+        .btn-secondary {
+            background-color: #764ba2;
+            border-color: #764ba2;
+        }
+        .btn-secondary:hover {
+            background-color: #653c91;
+            border-color: #653c91;
+        }
+        .leader-row {
+            position: relative;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border: 1px solid #ccc;
+            border-radius: 15px;
+            margin-bottom: 15px;
+            transition: all 0.3s;
+        }
+        .leader-row:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .leader-icon {
+            position: absolute;
+            top: -10px;
+            left: -10px;
+            background-color: #667eea;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+        }
+        .results-container {
+            background-color: #f8f9fa;
+            border-radius: 15px;
+            padding: 15px;
+            margin-top: 20px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .result-item {
+            background-color: white;
+            border-radius: 10px;
+            padding: 10px;
+            margin-bottom: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            transition: all 0.3s;
+            font-size: 0.9rem;
+        }
+        .result-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .result-item.suicide {
+            background-color: #ff6b6b;
+            color: white;
+        }
+        .bold {
+            font-weight: 700;
+        }
+        .remove-leader {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            cursor: pointer;
+            color: #ff6b6b;
+        }
+        .two-column {
+            display: flex;
+            gap: 20px;
+        }
+        .column {
+            flex: 1;
+        }
+        .donation-container {
+            background-color: #f8f9fa;
+            border-radius: 15px;
+            padding: 15px;
+            margin-top: 20px;
+            font-size: 0.9rem;
+            display: none;
+        }
+        .tooltip-icon {
+            cursor: help;
+            color: #667eea;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1><i class="fas fa-stopwatch"></i> Rally Timing Master</h1>
+        
+        <div class="two-column">
+            <div class="column">
+                <div id="leader-container">
+                    <!-- Leader rows will be dynamically added here -->
+                </div>
+
+                <button class="btn btn-secondary mb-3" onclick="addLeader()"><i class="fas fa-plus"></i> Add Leader</button>
+
+                <div class="row mb-3">
+                    <div class="col-md-12">
+                        <label for="launchTime" class="form-label">
+                            Suicide Rally Launch Time (UTC):
+                            <i class="fas fa-info-circle tooltip-icon" title="Enter the UTC time when the suicide rally should launch."></i>
+                        </label>
+                        <div class="input-group">
+                            <button class="btn btn-outline-secondary time-adjust-btn" type="button" onclick="adjustTime(-5)">-5 min</button>
+                            <input type="text" class="form-control" id="launchTime" placeholder="e.g., 14:30:00">
+                            <button class="btn btn-outline-secondary time-adjust-btn" type="button" onclick="adjustTime(5)">+5 min</button>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="btn btn-primary mb-3" onclick="calculateTimings()"><i class="fas fa-calculator"></i> Calculate Timings</button>
+                <button class="btn btn-secondary mb-3" onclick="setNextRoundTime()"><i class="fas fa-clock"></i> Set Next Round Time</button>
+            </div>
+
+            <div class="column">
+                <div class="results-container">
+                    <h2 class="mb-3">Launch Schedule:</h2>
+                    <div id="results"></div>
+                </div>
+
+                <div class="donation-container" id="donationContainer">
+                    <h3 class="mb-3 h5 text-muted">Support My Cause</h3>
+                    <p class="small text-muted">Help me grow my account in state #1390. Your support is greatly appreciated!</p>
+                    <a href="https://www.paypal.com/paypalme/onpageleads/1" class="btn btn-sm btn-outline-secondary me-2">Donate $1</a>
+                    <a href="https://www.paypal.com/paypalme/onpageleads/5" class="btn btn-sm btn-outline-secondary me-2">Donate $5</a>
+                    <a href="https://www.paypal.com/paypalme/onpageleads/15" class="btn btn-sm btn-outline-secondary">Donate $15</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let leaderCount = 0;
+        let launchTimeInput = null; // Store the input element
+
+        function saveToLocalStorage() {
+            const leaders = [];
+            const leaderRows = document.querySelectorAll('.leader-row');
+            leaderRows.forEach((row, index) => {
+                const nameInput = row.querySelector(`input[id^="leaderName"]`);
+                const timeInput = row.querySelector(`input[id^="leaderTime"]`);
+                leaders.push({
+                    name: nameInput.value,
+                    time: timeInput.value,
+                    strength: leaderRows.length - index
+                });
+            });
+            localStorage.setItem('rallyLeaders', JSON.stringify(leaders));
+            localStorage.setItem('launchTime', document.getElementById("launchTime").value);
+        }
+
+        function loadFromLocalStorage() {
+            const savedLeaders = JSON.parse(localStorage.getItem('rallyLeaders'));
+            if (savedLeaders) {
+                const leaderContainer = document.getElementById("leader-container");
+                leaderContainer.innerHTML = '';
+                savedLeaders.forEach((leader, index) => {
+                    addLeader(leader.name, leader.time, leader.strength);
+                });
+            } else {
+                addLeader("Alpha", "1:15", 5);
+                addLeader("Bravo", "3:08", 4);
+            }
+            const savedLaunchTime = localStorage.getItem('launchTime');
+            if (savedLaunchTime) {
+                document.getElementById("launchTime").value = savedLaunchTime;
+            }
+        }
+
+        function addLeader(name = '', time = '', strength = '') {
+            leaderCount++;
+            const leaderContainer = document.getElementById("leader-container");
+            const newLeader = document.createElement("div");
+            newLeader.classList.add("leader-row");
+            newLeader.dataset.strength = strength || Math.max(1, 6 - leaderCount);
+            newLeader.innerHTML = `
+                <div class="leader-icon"><i class="fas fa-user"></i></div>
+                <div class="remove-leader" onclick="removeLeader(this)"><i class="fas fa-times"></i></div>
+                <div class="row">
+                    <div class="col-md-6 mb-2">
+                        <label for="leaderName${leaderCount}" class="form-label">Leader ${leaderCount} Name:</label>
+                        <input type="text" class="form-control" id="leaderName${leaderCount}" placeholder="e.g., Charlie" value="${name}">
+                    </div>
+                    <div class="col-md-6 mb-2">
+                        <label for="leaderTime${leaderCount}" class="form-label">Time (min:sec):</label> 
+                        <input type="text" class="form-control" id="leaderTime${leaderCount}" placeholder="e.g., 2:30" value="${time}"> 
+                    </div>
+                </div>
+            `;
+            leaderContainer.appendChild(newLeader);
+            updateLeaderIcons();
+            saveToLocalStorage();
+        }
+
+        function removeLeader(element) {
+            element.closest('.leader-row').remove();
+            leaderCount--;
+            updateLeaderIcons();
+            saveToLocalStorage();
+        }
+
+        function updateLeaderIcons() {
+            const leaderRows = document.querySelectorAll('.leader-row');
+            leaderRows.forEach((row, index) => {
+                const icon = row.querySelector('.leader-icon i');
+                if (index === 0) {
+                    icon.className = 'fas fa-crown';
+                } else if (index === 1) {
+                    icon.className = 'fas fa-star';
+                } else if (index === leaderRows.length - 1) {
+                    icon.className = 'fas fa-skull-crossbones';
+                } else {
+                    icon.className = 'fas fa-user';
+                }
+                row.dataset.strength = leaderRows.length - index;
+            });
+        }
+
+        function parseTime(timeString) {
+            if (!timeString || !/^\d{1,2}:\d{2}$/.test(timeString.trim())) {
+                return null; 
+            }
+
+            const [minutes, seconds] = timeString.split(':').map(Number);
+            return minutes * 60 + seconds;
+        }
+
+        function formatTime(seconds) {
+            const min = Math.floor(seconds / 60);
+            const sec = seconds % 60;
+            return `${min}:${sec.toString().padStart(2, '0')}`;
+        }
+
+        function convertUTCTime(utcTime, delay) {
+            const [hours, minutes, seconds] = utcTime.split(':').map(Number);
+            let totalSeconds = hours * 3600 + minutes * 60 + seconds + delay;
+
+            if (totalSeconds >= 86400) {
+                totalSeconds = totalSeconds - 86400;
+            }
+
+            const resultHours = Math.floor(totalSeconds / 3600) % 24;
+            const resultMinutes = Math.floor((totalSeconds % 3600) / 60);
+            const resultSeconds = totalSeconds % 60;
+
+            return `${resultHours.toString().padStart(2, '0')}:${resultMinutes.toString().padStart(2, '0')}:${resultSeconds.toString().padStart(2, '0')}`;
+        }
+
+        function calculateTimings() {
+            const times = [];
+            const leaderRows = document.querySelectorAll('.leader-row');
+            let hasValidTimes = false;
+            leaderRows.forEach((row, index) => {
+                const nameInput = row.querySelector(`input[id^="leaderName"]`);
+                const timeInput = row.querySelector(`input[id^="leaderTime"]`); 
+                if (nameInput && nameInput.value && timeInput && timeInput.value) {
+                    const parsedTime = parseTime(timeInput.value);
+                    if (parsedTime !== null) {
+                        times.push({
+                            name: nameInput.value,
+                            time: parsedTime,
+                            originalIndex: index,
+                            strength: leaderRows.length - index
+                        });
+                        hasValidTimes = true; 
+                    } 
+                }
+            });
+
+            const launchTime = document.getElementById("launchTime").value;
+
+            if (!launchTime || !/^\d{2}:\d{2}:\d{2}$/.test(launchTime)) {
+                alert('Please enter a valid UTC launch time in the format hh:mm:ss.');
+                return;
+            }
+
+            if (!hasValidTimes) {
+                alert('Please enter valid times for at least one leader in the format "mm:ss".');
+                return;
+            }
+
+            const suicideRallyTime = times[times.length - 1].time; 
+
+            const results = times.map((leader, index) => {
+                const delay = index === times.length - 1 ? 0 : suicideRallyTime - leader.time + 1;
+                const utcLaunchTime = convertUTCTime(launchTime, delay);
+                return {
+                    name: leader.name,
+                    delay: formatTime(delay),
+                    launchTime: utcLaunchTime,
+                    isSuicide: index === times.length - 1,
+                    strength: leader.strength
+                };
+            });
+
+            results.sort((a, b) => b.strength - a.strength);
+
+            const resultsContainer = document.getElementById("results");
+            resultsContainer.innerHTML = "";
+            results.forEach((result) => {
+                const resultItem = document.createElement("div");
+                resultItem.classList.add("result-item");
+                if (result.isSuicide) {
+                    resultItem.classList.add("suicide");
+                }
+                let icon = 'fa-user';
+                if (result.strength === times.length) icon = 'fa-crown';
+                else if (result.strength === times.length - 1) icon = 'fa-star';
+                else if (result.isSuicide) icon = 'fa-skull-crossbones';
+                
+                resultItem.innerHTML = `
+                    <i class="fas ${icon} me-2"></i>
+                    <span class="bold">${result.name}</span> launches at 
+                    <span class="bold">${result.launchTime}</span> UTC
+                    ${result.isSuicide ? ' (Suicide Rally)' : ''}
+                `;
+                resultsContainer.appendChild(resultItem);
+            });
+
+            saveToLocalStorage();
+
+            // Show the donation container after calculating timings
+            document.getElementById("donationContainer").style.display = "block";
+        }
+
+        function setNextRoundTime() {
+            updateNextRoundTime();
+        }
+
+        function updateNextRoundTime() {
+            const now = new Date();
+            let minutes = now.getUTCMinutes();
+            let hours = now.getUTCHours();
+
+            // Round up to the next 10-minute mark, but ensure it's at least 10 minutes away
+            if (minutes % 10 === 0) {
+                // If we're at a 10-minute mark, round up to the next hour or 10-minute mark
+                if (minutes >= 50) {
+                    minutes = 0;
+                    hours = (hours + 1) % 24;
+                } else {
+                    minutes += 10;
+                }
+            } else {
+                // Round up to the next 10-minute mark
+                minutes = Math.ceil(minutes / 10) * 10;
+            }
+
+            // Ensure the time is at least 10 minutes ahead
+            if (minutes < now.getUTCMinutes() + 10) {
+                minutes += 10;
+                if (minutes >= 60) {
+                    minutes = 0;
+                    hours = (hours + 1) % 24;
+                }
+            }
+
+            const nextRoundTime = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:00`;
+            document.getElementById("launchTime").value = nextRoundTime; 
+
+            saveToLocalStorage();
+        }
+
+        function adjustTime(minutes) {
+            const launchTimeInput = document.getElementById("launchTime");
+            const currentTime = launchTimeInput.value;
+            
+            if (currentTime) {
+                const [hours, mins, secs] = currentTime.split(':').map(Number);
+                let totalMinutes = hours * 60 + mins + minutes;
+                
+                let newHours = Math.floor(totalMinutes / 60) % 24;
+                let newMinutes = totalMinutes % 60;
+                
+                launchTimeInput.value = `${newHours.toString().padStart(2, '0')}:${newMinutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+            }
+            
+            saveToLocalStorage();
+        }
+
+        // Load data from local storage and set initial time when the page loads
+        window.onload = function() {
+            loadFromLocalStorage();
+            if (!document.getElementById("launchTime").value) {
+                setNextRoundTime();
+            }
+        };
+    </script>
+</body>
+</html>
