@@ -3,7 +3,7 @@
 The **Rally Timing Master** is a simple tool designed to help players coordinate rallies in Whiteout Survival by calculating the optimal launch times for multiple leaders. This ensures that rallies land at the same time, maximizing the effectiveness of your coordinated attacks.
 
 ## Features
-- Input leader names and rally times
+- Input leader names and walking durations to target
 - Automatically calculates the optimal rally launch times
 - Displays launch schedule for each leader in UTC
 
