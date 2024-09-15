@@ -1,316 +1,341 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-bs-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Rally Timing Master</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --bs-body-bg-light: url('https://images.unsplash.com/photo-1519681393784-d120267933ba?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1124&q=100');
+            --bs-body-bg-dark: url('https://images.unsplash.com/photo-1515266591878-f93e32bc5937?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1124&q=100');
+            --bs-body-color: #333;
+            --bs-bg-card-light: rgba(255, 255, 255, 0.5);
+            --bs-border-color-light: rgba(0, 0, 0, 0.25);
+        }
+
+        [data-bs-theme="dark"] {
+            --bs-body-color: #fff;
+            --bs-bg-card-light: rgba(17, 25, 40, 0.75);
+            --bs-border-color-light: rgba(255, 255, 255, 0.25);
+        }
+
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background-image: var(--bs-body-bg-light);
+            background-position: center;
+            background-size: cover;
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: "Inter", sans-serif;
+            font-optical-sizing: auto;
+            font-style: normal;
             padding: 20px;
+            transition: background-image 0.3s ease;
         }
+
+        body.dark-mode {
+            background-image: var(--bs-body-bg-dark);
+        }
+
         .container {
-            background-color: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(16px) saturate(180%);
+            -webkit-backdrop-filter: blur(16px) saturate(180%);
+            background-color: var(--bs-bg-card-light);
             border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-            padding: 20px;
-            max-width: 1000px;
+            border: 1px solid var(--bs-border-color-light);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            padding: 30px;
+            max-width: 1200px;
             width: 100%;
+            transition: background-color 0.3s ease, border-color 0.3s ease;
         }
-        h1 {
-            color: #4a4a4a;
-            font-weight: 700;
-            margin-bottom: 20px;
-            text-align: center;
-            font-size: 2rem;
+
+        h1, h2, h3, .form-label, .troop-label {
+            color: var(--bs-body-color);
+            transition: color 0.3s ease;
         }
-        .form-label {
-            font-weight: 600;
-            color: #4a4a4a;
-            font-size: 0.9rem;
+
+        .nav-tabs .nav-link {
+            color: var(--bs-body-color); 
+            background-color: transparent;
+            border: none;
+            padding: 10px 20px;
+            margin-right: 5px;
+            border-radius: 10px 10px 0 0;
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
-        .form-control {
-            border: 2px solid #ddd;
+
+        .nav-tabs .nav-link.active {
+            background-color: rgba(255, 255, 255, 0.1);
+            font-weight: bold;
+        }
+
+        .tab-content {
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 0 15px 15px 15px;
+            padding: 20px;
+        }
+
+        .form-control, .btn {
             border-radius: 10px;
-            padding: 8px;
-            transition: all 0.3s;
-            font-size: 0.9rem;
         }
-        .form-control:focus {
-            border-color: #667eea;
-            box-shadow: 0 0 0 0.2rem rgba(102,126,234,0.25);
-        }
-        .btn {
-            border-radius: 10px;
-            padding: 8px 16px;
-            font-weight: 600;
-            transition: all 0.3s;
-            font-size: 0.9rem;
-        }
-        .btn-primary {
-            background-color: #667eea;
-            border-color: #667eea;
-        }
-        .btn-primary:hover {
-            background-color: #5a6fd5;
-            border-color: #5a6fd5;
-        }
-        .btn-secondary {
-            background-color: #764ba2;
-            border-color: #764ba2;
-        }
-        .btn-secondary:hover {
-            background-color: #653c91;
-            border-color: #653c91;
-        }
-        .leader-row {
-            position: relative;
-            padding: 15px;
-            background-color: #f8f9fa;
-            border: 1px solid #ccc;
+
+        .leader-row, 
+        .results-container,
+        .result-item,
+        #troopCalculator .result-card {
+            background-color: rgba(255, 255, 255, 0.1);
             border-radius: 15px;
+            padding: 15px;
             margin-bottom: 15px;
-            transition: all 0.3s;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
         }
-        .leader-row:hover {
+
+        .leader-row:hover,
+        .result-item:hover,
+        #troopCalculator .result-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
         }
-        .leader-icon {
-            position: absolute;
-            top: -10px;
-            left: -10px;
-            background-color: #667eea;
-            color: white;
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.9rem;
-        }
-        .results-container {
-            background-color: #f8f9fa;
-            border-radius: 15px;
-            padding: 15px;
-            margin-top: 20px;
-            max-height: 300px;
-            overflow-y: auto;
-        }
-        .result-item {
-            background-color: white;
-            border-radius: 10px;
-            padding: 10px;
-            margin-bottom: 10px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-            transition: all 0.3s;
-            font-size: 0.9rem;
-        }
-        .result-item:hover {
-            transform: translateX(5px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-        }
-        .result-item.suicide {
-            background-color: #ff6b6b;
-            color: white;
-        }
-        .bold {
-            font-weight: 700;
-        }
+
         .remove-leader {
             position: absolute;
-            top: 5px;
-            right: 5px;
+            top: 10px;
+            right: 10px;
             cursor: pointer;
-            color: #ff6b6b;
+            font-size: 1.2em;
+            color: #666;
+            transition: color 0.3s ease;
         }
-        .two-column {
-            display: flex;
-            gap: 20px;
+
+        .remove-leader:hover {
+            color: #ff4444;
         }
-        .column {
-            flex: 1;
+
+        .results-container {
+            max-height: 400px;
+            overflow-y: auto;
         }
-        .donation-container {
+
+        .result-item {
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+
+        .result-item.suicide {
+            background-color: rgba(255, 99, 71, 0.5);
+        }
+        .impact-time {
+            font-size: 1.2em;
+            margin-bottom: 15px;
+            padding: 10px;
             background-color: #f8f9fa;
-            border-radius: 15px;
-            padding: 15px;
-            margin-top: 20px;
-            font-size: 0.9rem;
+            border-radius: 5px;
+            border-left: 5px solid #007bff;
+        }
+
+        #mode-switch {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: #2196F3;
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+
+        #delaySliderContainer {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 15px;
+        }
+
+        #delaySliderContainer .form-label {
+            margin-bottom: 10px;
+        }
+
+        #sliderWrapper {
+            display: flex;
+            align-items: center;
+        }
+
+        #delaySlider {
+            flex-grow: 1;
+            margin-right: 15px;
+        }
+
+        #delaySliderValue {
+            width: 30px;
+            text-align: center;
+        }
+
+        #delayWarning {
+            color: red;
+            margin-top: 5px;
             display: none;
         }
-        .tooltip-icon {
-            cursor: help;
-            color: #667eea;
+
+        #troopCalculation .form-range::-webkit-slider-thumb {
+            background: var(--bs-primary);
         }
-        .time-adjust-btn {
-            margin: 0 5px;
+        #troopCalculation .form-range::-moz-range-thumb {
+            background: var(--bs-primary);
+        }
+        #troopCalculation .troop-slider {
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 15px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        #troopCalculation .troop-slider:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        #troopCalculation .lock-button {
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: var(--bs-secondary);
+        }
+        #troopCalculation .lock-button:hover {
+            color: var(--bs-primary);
+        }
+        #troopCalculation .lock-button.locked {
+            color: var(--bs-danger);
+        }
+        #troopCalculation .troop-label i {
+            margin-right: 5px;
+        }
+        #troopCalculation .result-card {
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        #troopCalculation .result-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        #troopCalculation .result-title {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+            color: var(--bs-body-color);
+        }
+        #troopCalculation .result-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+
+            .nav-tabs .nav-link {
+                padding: 8px 12px;
+            }
+
+            .results-container {
+                max-height: 300px;
+            }
         }
     </style>
 </head>
 <body>
+    <div id="mode-switch" class="switch">
+        <label>
+            <input type="checkbox" id="darkModeToggle">
+            <span class="slider round"></span>
+        </label>
+    </div>
+
     <div class="container">
-        <h1 id="time-header"><i class="fas fa-stopwatch"></i> Rally Timing Master <span id="utc-time"></span></h1>
+        <h1 id="time-header" class="mb-4"><i class="fas fa-stopwatch"></i> Rally Timing Master <span id="utc-time"></span></h1>
 
-        <div class="two-column">
-            <div class="column">
-                <div id="leader-container">
-                    <!-- Leader rows will be dynamically added here -->
+        <ul class="nav nav-tabs mb-4" id="myTab" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="main-tab" data-bs-toggle="tab" data-bs-target="#main" type="button" role="tab" aria-controls="main" aria-selected="true">Main</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="troop-calculation-tab" data-bs-toggle="tab" data-bs-target="#troopCalculation" type="button" role="tab" aria-controls="troopCalculation" aria-selected="false">Troop Calculation</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="settings-tab" data-bs-toggle="tab" data-bs-target="#settings" type="button" role="tab" aria-controls="settings" aria-selected="false">Settings</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="info-tab" data-bs-toggle="tab" data-bs-target="#info" type="button" role="tab" aria-controls="info" aria-selected="false">Info & Donation</button>
+            </li>
+        </ul>
+
+        <div class="tab-content" id="myTabContent">
+            <div class="tab-pane fade show active" id="main" role="tabpanel" aria-labelledby="main-tab">
                 </div>
-
-                <button class="btn btn-secondary mb-3" onclick="addLeader()"><i class="fas fa-plus"></i> Add Leader</button>
-
-                <div class="row mb-3">
-                    <div class="col-md-12">
-                        <label for="launchTime" class="form-label">
-                            Suicide Rally Launch Time (UTC):
-                            <i class="fas fa-info-circle tooltip-icon" title="Enter the UTC time when the suicide rally should launch."></i>
-                        </label>
-                        <div class="input-group">
-                            <button class="btn btn-outline-secondary time-adjust-btn" type="button" onclick="adjustTime(-5)">-5 min</button>
-                            <input type="text" class="form-control" id="launchTime" placeholder="e.g., 14:30:00">
-                            <button class="btn btn-outline-secondary time-adjust-btn" type="button" onclick="adjustTime(5)">+5 min</button>
-                        </div>
-                    </div>
+            <div class="tab-pane fade" id="troopCalculation" role="tabpanel" aria-labelledby="troop-calculation-tab">
                 </div>
-
-                <button class="btn btn-primary mb-3" onclick="calculateTimings()"><i class="fas fa-calculator"></i> Calculate Timings</button>
-                <button class="btn btn-secondary mb-3" onclick="setNextRoundTime()"><i class="fas fa-clock"></i> Set Next Round Time</button>
-
-                <div class="row mb-3">
-                    <div class="col-md-12">
-                        <label for="timeAdjustment" class="form-label">
-                            UTC Timer Adjustment (ms):
-                            <i class="fas fa-info-circle tooltip-icon" title="Adjust the displayed UTC time by milliseconds."></i>
-                        </label>
-                        <div class="input-group">
-                            <button class="btn btn-outline-secondary time-adjust-btn" type="button" onclick="adjustTimer(-250)">-250 ms</button>
-                            <input type="number" class="form-control" id="timeAdjustment" value="0">
-                            <button class="btn btn-outline-secondary time-adjust-btn" type="button" onclick="adjustTimer(250)">+250 ms</button>
-                        </div>
-                    </div>
+            <div class="tab-pane fade" id="settings" role="tabpanel" aria-labelledby="settings-tab">
                 </div>
-
-            </div>
-
-            <div class="column">
-                <div class="results-container">
-                    <h2 class="mb-3">Launch Schedule:</h2>
-                    <div id="results"></div>
+            <div class="tab-pane fade" id="info" role="tabpanel" aria-labelledby="info-tab">
                 </div>
-
-                <div class="donation-container" id="donationContainer">
-                    <h3 class="mb-3 h5 text-muted">Support My Cause</h3>
-                    <p class="small text-muted">Help me grow my account in state #1390. Your support is greatly appreciated!</p>
-                    <a href="https://www.paypal.com/paypalme/onpageleads/1" class="btn btn-sm btn-outline-secondary me-2">Donate $1</a>
-                    <a href="https://www.paypal.com/paypalme/onpageleads/5" class="btn btn-sm btn-outline-secondary me-2">Donate $5</a>
-                    <a href="https://www.paypal.com/paypalme/onpageleads/15" class="btn btn-sm btn-outline-secondary">Donate $15</a>
-                </div>
-            </div>
         </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        let leaderCount = 0;
-        let launchTimeInput = null; // Store the input element
-
-        function saveToLocalStorage() {
-            const leaders = [];
-            const leaderRows = document.querySelectorAll('.leader-row');
-            leaderRows.forEach((row, index) => {
-                const nameInput = row.querySelector(`input[id^="leaderName"]`);
-                const timeInput = row.querySelector(`input[id^="leaderTime"]`);
-                leaders.push({
-                    name: nameInput.value,
-                    time: timeInput.value,
-                    strength: leaderRows.length - index
-                });
-            });
-            localStorage.setItem('rallyLeaders', JSON.stringify(leaders));
-            localStorage.setItem('launchTime', document.getElementById("launchTime").value);
-        }
-
-        function loadFromLocalStorage() {
-            const savedLeaders = JSON.parse(localStorage.getItem('rallyLeaders'));
-            if (savedLeaders) {
-                const leaderContainer = document.getElementById("leader-container");
-                leaderContainer.innerHTML = '';
-                savedLeaders.forEach((leader, index) => {
-                    addLeader(leader.name, leader.time, leader.strength);
-                });
-            } else {
-                addLeader("Alpha", "1:15", 5);
-                addLeader("Bravo", "3:08", 4);
-            }
-            const savedLaunchTime = localStorage.getItem('launchTime');
-            if (savedLaunchTime) {
-                document.getElementById("launchTime").value = savedLaunchTime;
-            }
-        }
-
-        function addLeader(name = '', time = '', strength = '') {
-            leaderCount++;
-            const leaderContainer = document.getElementById("leader-container");
-            const newLeader = document.createElement("div");
-            newLeader.classList.add("leader-row");
-            newLeader.dataset.strength = strength || Math.max(1, 6 - leaderCount);
-            newLeader.innerHTML = `
-                <div class="leader-icon"><i class="fas fa-user"></i></div>
-                <div class="remove-leader" onclick="removeLeader(this)"><i class="fas fa-times"></i></div>
-                <div class="row">
-                    <div class="col-md-6 mb-2">
-                        <label for="leaderName${leaderCount}" class="form-label">Leader ${leaderCount} Name:</label>
-                        <input type="text" class="form-control" id="leaderName${leaderCount}" placeholder="e.g., Charlie" value="${name}">
-                    </div>
-                    <div class="col-md-6 mb-2">
-                        <label for="leaderTime${leaderCount}" class="form-label">Time (min:sec):</label> 
-                        <input type="text" class="form-control" id="leaderTime${leaderCount}" placeholder="e.g., 2:30" value="${time}"> 
-                    </div>
-                </div>
-            `;
-            leaderContainer.appendChild(newLeader);
-            updateLeaderIcons();
-            saveToLocalStorage();
-        }
-
-        function removeLeader(element) {
-            element.closest('.leader-row').remove();
-            leaderCount--;
-            updateLeaderIcons();
-            saveToLocalStorage();
-        }
-
-        function updateLeaderIcons() {
-            const leaderRows = document.querySelectorAll('.leader-row');
-            leaderRows.forEach((row, index) => {
-                const icon = row.querySelector('.leader-icon i');
-                if (index === 0) {
-                    icon.className = 'fas fa-crown';
-                } else if (index === 1) {
-                    icon.className = 'fas fa-star';
-                } else if (index === leaderRows.length - 1) {
-                    icon.className = 'fas fa-skull-crossbones';
-                } else {
-                    icon.className = 'fas fa-user';
-                }
-                row.dataset.strength = leaderRows.length - index;
-            });
-        }
+        // ------------------------------------
+        // Utility Functions
+        // ------------------------------------
 
         function parseTime(timeString) {
             if (!timeString || !/^\d{1,2}:\d{2}$/.test(timeString.trim())) {
-                return null; 
+                return null;
             }
-
             const [minutes, seconds] = timeString.split(':').map(Number);
             return minutes * 60 + seconds;
         }
@@ -324,193 +349,475 @@
         function convertUTCTime(utcTime, delay) {
             const [hours, minutes, seconds] = utcTime.split(':').map(Number);
             let totalSeconds = hours * 3600 + minutes * 60 + seconds + delay;
-
-            if (totalSeconds >= 86400) {
-                totalSeconds = totalSeconds - 86400;
-            }
-
-            const resultHours = Math.floor(totalSeconds / 3600) % 24;
+            totalSeconds = (totalSeconds + 86400) % 86400; // Ensure time is within 24 hours
+            const resultHours = Math.floor(totalSeconds / 3600);
             const resultMinutes = Math.floor((totalSeconds % 3600) / 60);
             const resultSeconds = totalSeconds % 60;
-
             return `${resultHours.toString().padStart(2, '0')}:${resultMinutes.toString().padStart(2, '0')}:${resultSeconds.toString().padStart(2, '0')}`;
         }
 
-        function calculateTimings() {
-            const times = [];
+        function formatNumber(num) {
+            return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        }
+
+        // ------------------------------------
+        // Data Management (localStorage)
+        // ------------------------------------
+
+        function saveState(key, value) {
+            localStorage.setItem(key, JSON.stringify(value));
+        }
+
+        function loadState(key) {
+            const storedValue = localStorage.getItem(key);
+            return storedValue ? JSON.parse(storedValue) : null;
+        }
+
+        // ------------------------------------
+        // Rally Timing Logic
+        // ------------------------------------
+
+        let leaderCount = 0; 
+
+        function addLeader(name = '', time = '', strength = '') {
+            leaderCount++;
+            const leaderContainer = document.getElementById("leader-container");
+            const newLeader = `
+                <div class="leader-row" data-strength="${strength || Math.max(1, 6 - leaderCount)}">
+                    <div class="leader-icon"><i class="fas fa-user"></i></div>
+                    <div class="remove-leader" onclick="removeLeader(this)"><i class="fas fa-times"></i></div>
+                    <div class="row">
+                        <div class="col-md-6 mb-2">
+                            <label for="leaderName${leaderCount}" class="form-label">Leader ${leaderCount} Name:</label>
+                            <input type="text" class="form-control" id="leaderName${leaderCount}" placeholder="e.g., Charlie" value="${name}" onchange="saveLeaderData()">
+                        </div>
+                        <div class="col-md-6 mb-2">
+                            <label for="leaderTime${leaderCount}" class="form-label">Walking duration (m:ss):</label>
+                            <input type="text" class="form-control" id="leaderTime${leaderCount}" placeholder="e.g., 2:30" value="${time}" onchange="saveLeaderData()">
+                        </div>
+                    </div>
+                </div>
+            `;
+            leaderContainer.innerHTML += newLeader; 
+            updateLeaderIcons();
+        }
+
+        function removeLeader(element) {
+            element.closest('.leader-row').remove();
+            leaderCount--;
+            updateLeaderIcons();
+            saveLeaderData();
+        }
+
+        function updateLeaderIcons() {
             const leaderRows = document.querySelectorAll('.leader-row');
-            let hasValidTimes = false;
             leaderRows.forEach((row, index) => {
-                const nameInput = row.querySelector(`input[id^="leaderName"]`);
-                const timeInput = row.querySelector(`input[id^="leaderTime"]`); 
-                if (nameInput && nameInput.value && timeInput && timeInput.value) {
-                    const parsedTime = parseTime(timeInput.value);
-                    if (parsedTime !== null) {
-                        times.push({
-                            name: nameInput.value,
-                            time: parsedTime,
-                            originalIndex: index,
-                            strength: leaderRows.length - index
-                        });
-                        hasValidTimes = true; 
-                    } 
+                const icon = row.querySelector('.leader-icon i');
+                row.dataset.strength = leaderRows.length - index; 
+                switch (index) {
+                    case 0: icon.className = 'fas fa-crown'; break;
+                    case 1: icon.className = 'fas fa-star'; break;
+                    case leaderRows.length - 1: icon.className = 'fas fa-skull-crossbones'; break;
+                    default: icon.className = 'fas fa-user';
                 }
             });
+        }
 
+        function calculateTimings() {
             const launchTime = document.getElementById("launchTime").value;
-
             if (!launchTime || !/^\d{2}:\d{2}:\d{2}$/.test(launchTime)) {
                 alert('Please enter a valid UTC launch time in the format hh:mm:ss.');
                 return;
             }
 
-            if (!hasValidTimes) {
-                alert('Please enter valid times for at least one leader in the format "mm:ss".');
-                return;
-            }
+            const delayAdjustment = parseInt(document.getElementById("delaySlider").value, 10) || 1;
 
-            const suicideRallyTime = times[times.length - 1].time; 
+            const results = Array.from(document.querySelectorAll('.leader-row'))
+                .map((row, index, arr) => {
+                    const name = row.querySelector(`input[id^="leaderName"]`).value;
+                    const time = row.querySelector(`input[id^="leaderTime"]`).value;
+                    const strength = parseInt(row.dataset.strength, 10);
+                    const suicideRallyTime = parseTime(arr[arr.length - 1].querySelector(`input[id^="leaderTime"]`).value);
+                    const delay = index === arr.length - 1
+                        ? 0
+                        : suicideRallyTime - parseTime(time) + (delayAdjustment * (arr.length - 1 - index));
 
-            const results = times.map((leader, index) => {
-                const delay = index === times.length - 1 ? 0 : suicideRallyTime - leader.time + 1;
-                const utcLaunchTime = convertUTCTime(launchTime, delay);
-                return {
-                    name: leader.name,
-                    delay: formatTime(delay),
-                    launchTime: utcLaunchTime,
-                    isSuicide: index === times.length - 1,
-                    strength: leader.strength
-                };
+                    // Correctly calculate impact time using full launch time
+                    const [launchHours, launchMinutes, launchSeconds] = launchTime.split(':').map(Number);
+                    const walkingSeconds = parseTime(time);
+                    let impactTimeSeconds = launchHours * 3600 + launchMinutes * 60 + launchSeconds + delay + walkingSeconds;
+                    impactTimeSeconds = (impactTimeSeconds + 86400) % 86400; // Ensure time is within 24 hours
+                    const impactHours = Math.floor(impactTimeSeconds / 3600).toString().padStart(2, '0');
+                    const impactMinutes = Math.floor((impactTimeSeconds % 3600) / 60).toString().padStart(2, '0');
+                    const impactSeconds = (impactTimeSeconds % 60).toString().padStart(2, '0');
+
+                    const utcLaunchTime = convertUTCTime(launchTime, delay);
+                    const impactTime = `${impactHours}:${impactMinutes}:${impactSeconds}`; 
+
+                    return { 
+                        name, 
+                        time, 
+                        strength, 
+                        delay: formatTime(delay), 
+                        launchTime: utcLaunchTime, 
+                        impactTime: impactTime,  
+                        isSuicide: index === arr.length - 1 
+                    };
+                })
+                .sort((a, b) => b.strength - a.strength);
+
+            results.sort((a, b) => {
+                // Convert impact times to dates for easy comparison
+                const aDate = new Date(`1970-01-01T${a.impactTime}Z`);
+                const bDate = new Date(`1970-01-01T${b.impactTime}Z`);
+                return aDate - bDate; // Sort in ascending order of impact time
             });
 
-            results.sort((a, b) => b.strength - a.strength);
+            displayResults(results);
+        }
 
+        function displayResults(results) {
             const resultsContainer = document.getElementById("results");
-            resultsContainer.innerHTML = "";
+            resultsContainer.innerHTML = ""; 
+
             results.forEach((result) => {
-                const resultItem = document.createElement("div");
-                resultItem.classList.add("result-item");
-                if (result.isSuicide) {
-                    resultItem.classList.add("suicide");
-                }
                 let icon = 'fa-user';
-                if (result.strength === times.length) icon = 'fa-crown';
-                else if (result.strength === times.length - 1) icon = 'fa-star';
+                if (result.strength === results.length) icon = 'fa-crown';
+                else if (result.strength === results.length - 1) icon = 'fa-star';
                 else if (result.isSuicide) icon = 'fa-skull-crossbones';
-                
+
+                const resultItem = document.createElement('div');
+                resultItem.className = `result-item ${result.isSuicide ? 'suicide' : ''}`;
                 resultItem.innerHTML = `
                     <i class="fas ${icon} me-2"></i>
                     <span class="bold">${result.name}</span> launches at 
-                    <span class="bold">${result.launchTime}</span> UTC
+                    <span class="bold">${result.launchTime}</span> UTC 
+                    - Impacts at <span class="bold">${result.impactTime}</span> UTC 
                     ${result.isSuicide ? ' (Suicide Rally)' : ''}
                 `;
                 resultsContainer.appendChild(resultItem);
             });
+        }
 
-            saveToLocalStorage();
 
-            // Show the donation container after calculating timings
-            document.getElementById("donationContainer").style.display = "block";
+        // ------------------------------------
+        // Troop Calculation Logic
+        // ------------------------------------
+        function calculateTroopPortions() {
+            const totalTroops = parseInt(document.getElementById("totalTroops").value, 10) || 0;
+            const troopTypes = ["infantry", "lancers", "marksman"];
+
+            troopTypes.forEach(type => {
+                const percentage = parseInt(document.getElementById(`${type}`).value, 10);
+                const troopCount = Math.round((percentage / 100) * totalTroops);
+                document.getElementById(`${type}Result`).textContent = formatNumber(troopCount);
+                document.getElementById(`${type}Value`).textContent = percentage;
+            });
+
+            // Save the current state
+            saveTroopData();
+        }
+
+        function adjustTroopRatios(changedInput) {
+            const troopTypes = ["infantry", "lancers", "marksman"];
+
+            let otherSlidersTotal = troopTypes.reduce((sum, type) => {
+                if (type !== changedInput.id) {
+                    return sum + parseInt(document.getElementById(`${type}`).value, 10);
+                }
+                return sum;
+            }, 0);
+
+            let maxValue = 100 - otherSlidersTotal;
+
+            if (parseInt(changedInput.value, 10) > maxValue) {
+                changedInput.value = maxValue;
+            }
+
+            document.getElementById(`${changedInput.id}Value`).textContent = changedInput.value;
+
+            // Recalculate troop portions with the updated slider percentages
+            calculateTroopPortions();
+        }
+
+        function saveTroopData() {
+            const totalTroops = document.getElementById("totalTroops").value;
+            const infantry = document.getElementById("infantry").value;
+            const lancers = document.getElementById("lancers").value;
+            const marksman = document.getElementById("marksman").value;
+
+            localStorage.setItem('totalTroops', totalTroops);
+            localStorage.setItem('infantryPercentage', infantry);
+            localStorage.setItem('lancersPercentage', lancers);
+            localStorage.setItem('marksmanPercentage', marksman);
+        }
+
+        function loadTroopData() {
+            const totalTroops = localStorage.getItem('totalTroops') || 60000;
+            const infantry = localStorage.getItem('infantryPercentage') || 50;
+            const lancers = localStorage.getItem('lancersPercentage') || 20;
+            const marksman = localStorage.getItem('marksmanPercentage') || 30;
+
+            document.getElementById("totalTroops").value = totalTroops;
+            document.getElementById("infantry").value = infantry;
+            document.getElementById("lancers").value = lancers;
+            document.getElementById("marksman").value = marksman;
+
+            calculateTroopPortions();
+        }
+
+        function initializeTroopCalculator() {
+            loadTroopData();
+
+            // Update troop calculations when "Total Troops" changes
+            document.getElementById("totalTroops").addEventListener('input', calculateTroopPortions);
+            document.getElementById("totalTroops").addEventListener('change', calculateTroopPortions);
+
+            // Add event listeners to sliders
+            ["infantry", "lancers", "marksman"].forEach(type => {
+                document.getElementById(type).addEventListener('input', function() {
+                    adjustTroopRatios(this);
+                });
+            });
+        }
+
+        // ------------------------------------
+        // UI and Event Handling 
+        // ------------------------------------
+        document.addEventListener('DOMContentLoaded', function() {
+            // ... (Load UI elements - main, troopCalc, settings, info) ...
+
+            loadState('darkMode') === 'true' ? toggleDarkMode() : null; 
+
+            document.getElementById("launchTime").value = loadState('launchTime') || '';
+            document.getElementById("timeAdjustment").value = loadState('timeAdjustment') || 0;
+            document.getElementById("delaySlider").value = loadState('delayAdjustment') || 1;
+            document.getElementById("delaySliderValue").textContent = document.getElementById("delaySlider").value;
+            parseInt(document.getElementById("delaySlider").value, 10) > 5 ? 
+                document.getElementById("delayWarning").style.display = "inline-block" : 
+                document.getElementById("delayWarning").style.display = "none";
+
+            loadLeaderData(); 
+
+            if (!document.getElementById("launchTime").value) {
+                setNextRoundTime();
+            }
+            setInterval(updateUTCTime, 1000);
+
+            document.getElementById('darkModeToggle').addEventListener('change', toggleDarkMode);
+            document.getElementById("delaySlider").addEventListener('input', function () {
+                document.getElementById("delaySliderValue").textContent = this.value;
+                saveState('delayAdjustment', this.value);
+                parseInt(this.value, 10) > 5 ? 
+                    document.getElementById("delayWarning").style.display = "inline-block" :
+                    document.getElementById("delayWarning").style.display = "none";
+            });
+
+            initializeTroopCalculator();
+        });
+
+        function saveLeaderData() {
+            const leaders = Array.from(document.querySelectorAll('.leader-row')).map(row => ({
+                name: row.querySelector(`input[id^="leaderName"]`).value,
+                time: row.querySelector(`input[id^="leaderTime"]`).value,
+                strength: row.dataset.strength 
+            }));
+            saveState('rallyLeaders', leaders);
+        }
+
+        function loadLeaderData() {
+            const savedLeaders = loadState('rallyLeaders') || [
+                { name: "Alpha", time: "1:15", strength: 5 },
+                { name: "Bravo", time: "3:08", strength: 4 }
+            ];
+            savedLeaders.forEach(leader => addLeader(leader.name, leader.time, leader.strength));
         }
 
         function setNextRoundTime() {
-            updateNextRoundTime();
-        }
-
-        function updateNextRoundTime() {
             const now = new Date();
             let minutes = now.getUTCMinutes();
             let hours = now.getUTCHours();
-
-            // Round up to the next 10-minute mark, but ensure it's at least 10 minutes away
-            if (minutes % 10 === 0) {
-                // If we're at a 10-minute mark, round up to the next hour or 10-minute mark
-                if (minutes >= 50) {
-                    minutes = 0;
-                    hours = (hours + 1) % 24;
-                } else {
-                    minutes += 10;
-                }
-            } else {
-                // Round up to the next 10-minute mark
-                minutes = Math.ceil(minutes / 10) * 10;
+            minutes = Math.ceil((minutes + 10) / 10) * 10;
+            if (minutes >= 60) {
+                minutes = 0;
+                hours = (hours + 1) % 24; 
             }
-
-            // Ensure the time is at least 10 minutes ahead
-            if (minutes < now.getUTCMinutes() + 10) {
-                minutes += 10;
-                if (minutes >= 60) {
-                    minutes = 0;
-                    hours = (hours + 1) % 24;
-                }
-            }
-
             const nextRoundTime = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:00`;
-            document.getElementById("launchTime").value = nextRoundTime; 
-
-            saveToLocalStorage();
+            document.getElementById("launchTime").value = nextRoundTime;
+            saveState('launchTime', nextRoundTime);
         }
 
         function adjustTime(minutes) {
             const launchTimeInput = document.getElementById("launchTime");
             const currentTime = launchTimeInput.value;
-            
             if (currentTime) {
                 const [hours, mins, secs] = currentTime.split(':').map(Number);
                 let totalMinutes = hours * 60 + mins + minutes;
-                
-                let newHours = Math.floor(totalMinutes / 60) % 24;
+                let newHours = (Math.floor(totalMinutes / 60) + 24) % 24; 
                 let newMinutes = totalMinutes % 60;
-                
-                launchTimeInput.value = `${newHours.toString().padStart(2, '0')}:${newMinutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+                const adjustedTime = `${newHours.toString().padStart(2, '0')}:${newMinutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+                launchTimeInput.value = adjustedTime;
+                saveState('launchTime', adjustedTime);
             }
-            
-            saveToLocalStorage();
         }
 
-        // Function to adjust the UTC timer
         function adjustTimer(ms) {
             const timeAdjustmentInput = document.getElementById("timeAdjustment");
             const currentAdjustment = parseInt(timeAdjustmentInput.value, 10) || 0;
-            const newAdjustment = currentAdjustment + ms;
-            timeAdjustmentInput.value = newAdjustment;
-            localStorage.setItem('timeAdjustment', newAdjustment); // Save to localStorage
-            updateUTCTime(); // Update the displayed time
+            const adjustedValue = currentAdjustment + ms;
+            timeAdjustmentInput.value = adjustedValue; 
+            saveState('timeAdjustment', adjustedValue);
+            updateUTCTime();
         }
 
-        // Update the displayed UTC time with the adjustment
         function updateUTCTime() {
             const now = new Date();
-            const hours = now.getUTCHours().toString().padStart(2, '0');
-            const minutes = now.getUTCMinutes().toString().padStart(2, '0');
-            const seconds = now.getUTCSeconds().toString().padStart(2, '0');
-            const msAdjustment = parseInt(localStorage.getItem('timeAdjustment'), 10) || 0;
-
-            // Adjust the time by the saved milliseconds
+            const msAdjustment = parseInt(loadState('timeAdjustment') || 0, 10);
             now.setMilliseconds(now.getMilliseconds() + msAdjustment);
-
             const adjustedHours = now.getUTCHours().toString().padStart(2, '0');
             const adjustedMinutes = now.getUTCMinutes().toString().padStart(2, '0');
             const adjustedSeconds = now.getUTCSeconds().toString().padStart(2, '0');
-            
             document.getElementById("utc-time").textContent = `(${adjustedHours}:${adjustedMinutes}:${adjustedSeconds} UTC)`;
         }
 
-        // Load data from local storage and set initial time when the page loads
-        window.onload = function() {
-            loadFromLocalStorage();
-            
-            const savedAdjustment = localStorage.getItem('timeAdjustment');
-            if (savedAdjustment) {
-                document.getElementById("timeAdjustment").value = savedAdjustment;
-            }
-            
-            if (!document.getElementById("launchTime").value) {
-                setNextRoundTime();
-            }
-            // Update UTC time every second
-            setInterval(updateUTCTime, 1000);
-        };
+        function toggleDarkMode() {
+            const html = document.documentElement;
+            const isDarkMode = html.getAttribute('data-bs-theme') === 'dark';
+            html.setAttribute('data-bs-theme', isDarkMode ? 'light' : 'dark');
+            saveState('darkMode', !isDarkMode);
+            document.body.classList.toggle('dark-mode', !isDarkMode);
+        }
+    </script>
+
+    <script>
+        // This part loads your HTML elements for each tab. 
+        // Make sure the IDs in the following script match 
+        // the ones you used in your HTML structure above.
+        document.getElementById("main").innerHTML = `
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <label for="launchTime" class="form-label">Suicide Rally Launch Time (UTC):</label>
+                <div class="input-group">
+                    <button class="btn btn-outline-secondary" type="button" onclick="adjustTime(-5)">-5 min</button>
+                    <input type="text" class="form-control" id="launchTime" placeholder="e.g., 14:30:00">
+                    <button class="btn btn-outline-secondary" type="button" onclick="adjustTime(5)">+5 min</button>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <button class="btn btn-secondary mt-4" onclick="setNextRoundTime()">Set Next Round Time</button>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                <div id="leader-container">
+                </div>
+                <button class="btn btn-secondary mb-3" onclick="addLeader()"><i class="fas fa-plus"></i> Add Leader</button>
+                <button class="btn btn-success mb-3" onclick="calculateTimings()"><i class="fas fa-calculator"></i> Calculate Timings</button>
+            </div>
+            <div class="col-md-6">
+                <div class="results-container">
+                    <h2 class="mb-3">Launch Schedule:</h2>
+                    <div id="results"></div> 
+                </div>
+            </div>
+        </div>
+    `;
+
+    document.getElementById("troopCalculation").innerHTML = `
+        <h2 class="mb-4">Troop Formation Calculator</h2>
+        <div class="row">
+            <div class="col-md-6 mb-4">
+                <div class="form-group">
+                    <label for="totalTroops" class="form-label">Total Troops:</label>
+                    <input type="number" id="totalTroops" value="60000" class="form-control">
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-4 mb-4">
+                <div class="troop-slider">
+                    <label for="infantry" class="form-label d-flex justify-content-between align-items-center">
+                        <span class="troop-label"><i class="fas fa-user-shield"></i> Infantry: <span id="infantryValue">50</span>%</span>
+                        <i class="fas fa-lock lock-button" onclick="toggleTroopLock('infantry')" data-locked="false" style="display: none;"></i> 
+                    </label>
+                    <input type="range" id="infantry" min="0" max="100" value="50" class="form-range" oninput="adjustTroopRatios(this)">
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="troop-slider">
+                    <label for="lancers" class="form-label d-flex justify-content-between align-items-center">
+                        <span class="troop-label"><i class="fas fa-horse"></i> Lancers: <span id="lancersValue">20</span>%</span>
+                        <i class="fas fa-lock lock-button" onclick="toggleTroopLock('lancers')" data-locked="false" style="display: none;"></i> 
+                    </label>
+                    <input type="range" id="lancers" min="0" max="100" value="20" class="form-range" oninput="adjustTroopRatios(this)">
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="troop-slider">
+                    <label for="marksman" class="form-label d-flex justify-content-between align-items-center">
+                        <span class="troop-label"><i class="fas fa-bullseye"></i> Marksman: <span id="marksmanValue">30</span>%</span>
+                        <i class="fas fa-lock lock-button" onclick="toggleTroopLock('marksman')" data-locked="false" style="display: none;"></i> 
+                    </label>
+                    <input type="range" id="marksman" min="0" max="100" value="30" class="form-range" oninput="adjustTroopRatios(this)">
+                </div>
+            </div>
+        </div>
+        <div class="row mt-4">
+            <div class="col-md-4 mb-3">
+                <div class="result-card">
+                    <h3 class="result-title">Infantry</h3>
+                    <div class="result-value" id="infantryResult">30,000</div> 
+                </div>
+            </div>
+            <div class="col-md-4 mb-3">
+                <div class="result-card">
+                    <h3 class="result-title">Lancers</h3>
+                    <div class="result-value" id="lancersResult">12,000</div> 
+                </div>
+            </div>
+            <div class="col-md-4 mb-3">
+                <div class="result-card">
+                    <h3 class="result-title">Marksman</h3>
+                    <div class="result-value" id="marksmanResult">18,000</div> 
+                </div>
+            </div>
+        </div>
+    `;
+
+    document.getElementById("settings").innerHTML = `
+        <h2 class="mb-4">Settings</h2>
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label for="timeAdjustment" class="form-label">Time Adjustment (ms):</label>
+                <div class="input-group">
+                    <button class="btn btn-outline-secondary" type="button" onclick="adjustTimer(-250)">-250 ms</button>
+                    <input type="number" class="form-control" id="timeAdjustment" value="0">
+                    <button class="btn btn-outline-secondary" type="button" onclick="adjustTimer(250)">+250 ms</button>
+                </div>
+            </div>
+        </div>
+        <div class="row mb-3" id="delaySliderContainer">
+            <div class="col-md-6">
+                <label for="delaySlider" class="form-label">Delay Adjustment (seconds):</label>
+                <div id="sliderWrapper">
+                    <input type="range" class="form-range" min="0" max="10" value="1" id="delaySlider">
+                    <span id="delaySliderValue">1</span> 
+                </div>
+                <span id="delayWarning">More than 5 seconds is not recommended</span>
+            </div>
+        </div>
+    `;
+
+    document.getElementById("info").innerHTML = `
+        <h2 class="mb-4">About Rally Timing Master</h2>
+        <p>Rally Timing Master is a tool designed to help coordinate rally timings for game events. 
+           It calculates launch times for leaders based on their walking durations and a specified rally time.</p>
+        <h3 class="mt-4 mb-3">Support My Cause</h3>
+        <p>Help me grow my account in state #1390. Your support is greatly appreciated!</p>
+        <a href="https://www.paypal.com/paypalme/onpageleads/1" class="btn btn-outline-primary me-2">Donate $1</a>
+        <a href="https://www.paypal.com/paypalme/onpageleads/5" class="btn btn-outline-primary me-2">Donate $5</a>
+        <a href="https://www.paypal.com/paypalme/onpageleads/15" class="btn btn-outline-primary">Donate $15</a>
+    `;
     </script>
 </body>
 </html>
