@@ -568,61 +568,66 @@
             const delayAdjustment = parseInt(document.getElementById("delaySlider").value, 10) || 1;
 
             const leaders = Array.from(document.querySelectorAll('.leader-row'))
-                .map((row, index) => ({
+                .map((row) => ({
                     name: row.querySelector(`input[id^="leaderName"]`).value,
                     time: row.querySelector(`input[id^="leaderTime"]`).value,
                     strength: parseInt(row.dataset.strength, 10),
                     rallyTime: parseInt(row.querySelector(`select[id^="leaderRallyTime"]`).value, 10),
-                    index: index
                 }));
 
-            const suicideRallyTime = parseTime(leaders[leaders.length - 1].time);
-            const maxRallyTime = Math.max(...leaders.map(l => l.rallyTime));
+            // 1. Calculate Target Impact Times
+            const impactTimes = [];
+            let currentImpactTime = new Date(`1970-01-01T${launchTime}Z`);
 
-            const results = leaders.map((leader, index, arr) => {
-                const rallyTimeCompensation = (maxRallyTime - leader.rallyTime) * 60;
-                const delay = index === arr.length - 1
-                    ? 0
-                    : suicideRallyTime - parseTime(leader.time) + (delayAdjustment * (arr.length - 1 - index)) + rallyTimeCompensation;
+            for (let i = 0; i < leaders.length; i++) {
+                impactTimes.push(currentImpactTime);
 
-                // Calculate impact time using full launch time
-                const [launchHours, launchMinutes, launchSeconds] = launchTime.split(':').map(Number);
+                // Subtract delay for ALL leaders AFTER the first
+                if (i < leaders.length - 1) { // Adjust if there are more leaders
+                    currentImpactTime = new Date(currentImpactTime.getTime() - (delayAdjustment * 1000)); 
+                }
+            }
+
+            // 2. Calculate Launch Times (working backward from impact times)
+            const results = leaders.map((leader, index) => {
                 const walkingSeconds = parseTime(leader.time);
-                let impactTimeSeconds = launchHours * 3600 + launchMinutes * 60 + launchSeconds + delay + walkingSeconds + (leader.rallyTime * 60);
-                impactTimeSeconds = (impactTimeSeconds + 86400) % 86400; // Ensure time is within 24 hours
-                const impactHours = Math.floor(impactTimeSeconds / 3600).toString().padStart(2, '0');
-                const impactMinutes = Math.floor((impactTimeSeconds % 3600) / 60).toString().padStart(2, '0');
-                const impactSeconds = (impactTimeSeconds % 60).toString().padStart(2, '0');
+                const rallySeconds = leader.rallyTime * 60;
 
-                const utcLaunchTime = convertUTCTime(launchTime, delay);
-                const impactTime = `${impactHours}:${impactMinutes}:${impactSeconds}`; 
+                // Calculate launch time based on adjusted impact time
+                const launchTime = new Date(impactTimes[index].getTime() - ((walkingSeconds + rallySeconds) * 1000));
 
-                return { 
-                    name: leader.name, 
-                    time: leader.time, 
-                    strength: leader.strength, 
-                    rallyTime: leader.rallyTime, 
-                    delay: formatTime(delay), 
-                    launchTime: utcLaunchTime, 
-                    impactTime: impactTime,  
-                    isSuicide: index === arr.length - 1 
+                return {
+                    name: leader.name,
+                    time: leader.time,
+                    strength: leader.strength,
+                    rallyTime: leader.rallyTime,
+                    delay: formatTime(delayAdjustment),
+                    launchTime: formatImpactTime(launchTime),
+                    impactTime: formatImpactTime(impactTimes[index]),
+                    isSuicide: leader.strength === 1, 
                 };
-            });
-
-            results.sort((a, b) => {
-                // Convert impact times to dates for easy comparison
-                const aDate = new Date(`1970-01-01T${a.impactTime}Z`);
-                const bDate = new Date(`1970-01-01T${b.impactTime}Z`);
-                return aDate - bDate; // Sort in ascending order of impact time
             });
 
             displayResults(results);
         }
 
+// Helper function to format Date object to HH:MM:SS (unchanged)
+function formatImpactTime(dateObj) {
+    return `${dateObj.getUTCHours().toString().padStart(2, '0')}:${dateObj.getUTCMinutes().toString().padStart(2, '0')}:${dateObj.getUTCSeconds().toString().padStart(2, '0')}`;
+}
+
         // Updated displayResults function
         function displayResults(results) {
             const resultsContainer = document.getElementById("results");
             resultsContainer.innerHTML = ""; 
+
+            // Find the earliest launch time
+            let earliestLaunchTime = results.length > 0 ? results[0].launchTime : null;
+            results.forEach((result) => {
+                if (result.launchTime < earliestLaunchTime) {
+                    earliestLaunchTime = result.launchTime;
+                }
+            });
 
             results.forEach((result) => {
                 let icon = 'fa-user';
@@ -647,6 +652,12 @@
                         ${result.isSuicide ? '<span class="suicide-tag">1st</span>' : ''}
                     </div>
                 `;
+
+                const launchTimeSpan = resultItem.querySelector('.launch-time');
+                if (result.launchTime === earliestLaunchTime) {
+                    launchTimeSpan.classList.add('bg-warning');
+                }
+
                 resultsContainer.appendChild(resultItem);
             });
         }
@@ -849,7 +860,7 @@
         document.getElementById("main").innerHTML = `
         <div class="row mb-4">
             <div class="col-md-6">
-                <label for="launchTime" class="form-label">Rally Launch Time (UTC):</label>
+                <label for="launchTime" class="form-label">Rally Impact Time (UTC):</label>
                 <div class="input-group">
                     <button class="btn btn-outline-secondary" type="button" onclick="adjustTime(-5)">-5 min</button>
                     <input type="text" class="form-control" id="launchTime" placeholder="e.g., 14:30:00">
