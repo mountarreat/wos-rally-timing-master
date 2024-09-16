@@ -103,10 +103,32 @@
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
         }
 
+        .leader-row {
+            position: relative;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 15px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .leader-row:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .leader-icon {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            font-size: 1.2em;
+            color: var(--bs-body-color);
+        }
+
         .remove-leader {
             position: absolute;
-            top: 10px;
-            right: 10px;
+            top: 15px;
+            right: 15px;
             cursor: pointer;
             font-size: 1.2em;
             color: #666;
@@ -117,9 +139,24 @@
             color: #ff4444;
         }
 
+        .leader-row .row {
+            margin-top: 25px;
+        }
+
+        .leader-row .form-label {
+            font-size: 0.9em;
+            margin-bottom: 0.2rem;
+        }
+
+        .leader-row .form-control,
+        .leader-row .form-select {
+            font-size: 0.9em;
+            padding: 0.375rem 0.75rem;
+        }
+
         .results-container {
-            max-height: 400px;
-            overflow-y: auto;
+            /* max-height: 400px;
+            overflow-y: auto;*/
         }
 
         .result-item {
@@ -132,11 +169,12 @@
         }
         .impact-time {
             font-size: 1.2em;
-            margin-bottom: 15px;
+            font-weight: bold;
+            /* margin-bottom: 15px; */
             padding: 10px;
             background-color: #f8f9fa;
             border-radius: 5px;
-            border-left: 5px solid #007bff;
+            /* border-left: 5px solid var(--bs-body-color); */
         }
 
         #mode-switch {
@@ -273,6 +311,87 @@
             font-weight: bold;
         }
 
+        .results-container {
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+            /* max-height: 400px;
+            overflow-y: auto; */
+        }
+
+        #results {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, 1fr);
+            gap: 10px;
+        }
+
+        .result-item {
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .result-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .result-item.suicide {
+            background-color: rgba(255, 99, 71, 0.2);
+        }
+
+        .result-icon {
+            font-size: 1.2em;
+            margin-right: 10px;
+            width: 20px;
+            text-align: center;
+        }
+
+        .result-content {
+            flex-grow: 1;
+        }
+
+        .result-name {
+            font-weight: bold;
+            margin-bottom: 2px;
+        }
+
+        .result-times {
+            font-size: 0.9em;
+            display: flex;
+            align-items: center;
+        }
+
+        .launch-time, .impact-time {
+            background-color: rgba(0, 0, 0, 0.1);
+            padding: 2px 4px;
+            border-radius: 3px;
+        }
+
+        .arrow {
+            margin: 0 4px;
+            color: var(--bs-secondary);
+        }
+
+        .result-details {
+            font-size: 0.8em;
+            color: var(--bs-body-color);
+            display: flex;
+            align-items: center;
+            margin-top: 2px;
+        }
+
+        .suicide-tag {
+            background-color: rgba(255, 99, 71, 0.6);
+            color: white;
+            padding: 1px 3px;
+            border-radius: 3px;
+            margin-left: 5px;
+        }
+
         @media (max-width: 768px) {
             .container {
                 padding: 15px;
@@ -284,6 +403,15 @@
 
             .results-container {
                 max-height: 300px;
+            }
+            .leader-row .col-md-4 {
+                margin-bottom: 10px;
+            }
+            .result-times {
+                flex-direction: column;
+            }
+            #results {
+                grid-template-columns: 1fr;
             }
         }
     </style>
@@ -379,21 +507,28 @@
 
         let leaderCount = 0; 
 
-        function addLeader(name = '', time = '', strength = '') {
+        function addLeader(name = '', time = '', strength = '', rallyTime = '5') {
             leaderCount++;
             const leaderContainer = document.getElementById("leader-container");
             const newLeader = `
-                <div class="leader-row" data-strength="${strength || Math.max(1, 6 - leaderCount)}">
+                <div class="leader-row" data-strength="${strength || Math.max(1, 6 - leaderCount)}" data-rally-time="${rallyTime}">
                     <div class="leader-icon"><i class="fas fa-user"></i></div>
                     <div class="remove-leader" onclick="removeLeader(this)"><i class="fas fa-times"></i></div>
-                    <div class="row">
-                        <div class="col-md-6 mb-2">
+                    <div class="row g-2 align-items-end">
+                        <div class="col-md-4">
                             <label for="leaderName${leaderCount}" class="form-label">Leader ${leaderCount} Name:</label>
                             <input type="text" class="form-control" id="leaderName${leaderCount}" placeholder="e.g., Charlie" value="${name}" onchange="saveLeaderData()">
                         </div>
-                        <div class="col-md-6 mb-2">
+                        <div class="col-md-4">
                             <label for="leaderTime${leaderCount}" class="form-label">Walking duration (m:ss):</label>
                             <input type="text" class="form-control" id="leaderTime${leaderCount}" placeholder="e.g., 2:30" value="${time}" onchange="saveLeaderData()">
+                        </div>
+                        <div class="col-md-4">
+                            <label for="leaderRallyTime${leaderCount}" class="form-label">Rally Time:</label>
+                            <select class="form-select" id="leaderRallyTime${leaderCount}" onchange="saveLeaderData()">
+                                <option value="1" ${rallyTime === '1' ? 'selected' : ''}>1 min</option>
+                                <option value="5" ${rallyTime === '5' ? 'selected' : ''}>5 min</option>
+                            </select>
                         </div>
                     </div>
                 </div>
@@ -432,39 +567,47 @@
 
             const delayAdjustment = parseInt(document.getElementById("delaySlider").value, 10) || 1;
 
-            const results = Array.from(document.querySelectorAll('.leader-row'))
-                .map((row, index, arr) => {
-                    const name = row.querySelector(`input[id^="leaderName"]`).value;
-                    const time = row.querySelector(`input[id^="leaderTime"]`).value;
-                    const strength = parseInt(row.dataset.strength, 10);
-                    const suicideRallyTime = parseTime(arr[arr.length - 1].querySelector(`input[id^="leaderTime"]`).value);
-                    const delay = index === arr.length - 1
-                        ? 0
-                        : suicideRallyTime - parseTime(time) + (delayAdjustment * (arr.length - 1 - index));
+            const leaders = Array.from(document.querySelectorAll('.leader-row'))
+                .map((row, index) => ({
+                    name: row.querySelector(`input[id^="leaderName"]`).value,
+                    time: row.querySelector(`input[id^="leaderTime"]`).value,
+                    strength: parseInt(row.dataset.strength, 10),
+                    rallyTime: parseInt(row.querySelector(`select[id^="leaderRallyTime"]`).value, 10),
+                    index: index
+                }));
 
-                    // Correctly calculate impact time using full launch time
-                    const [launchHours, launchMinutes, launchSeconds] = launchTime.split(':').map(Number);
-                    const walkingSeconds = parseTime(time);
-                    let impactTimeSeconds = launchHours * 3600 + launchMinutes * 60 + launchSeconds + delay + walkingSeconds;
-                    impactTimeSeconds = (impactTimeSeconds + 86400) % 86400; // Ensure time is within 24 hours
-                    const impactHours = Math.floor(impactTimeSeconds / 3600).toString().padStart(2, '0');
-                    const impactMinutes = Math.floor((impactTimeSeconds % 3600) / 60).toString().padStart(2, '0');
-                    const impactSeconds = (impactTimeSeconds % 60).toString().padStart(2, '0');
+            const suicideRallyTime = parseTime(leaders[leaders.length - 1].time);
+            const maxRallyTime = Math.max(...leaders.map(l => l.rallyTime));
 
-                    const utcLaunchTime = convertUTCTime(launchTime, delay);
-                    const impactTime = `${impactHours}:${impactMinutes}:${impactSeconds}`; 
+            const results = leaders.map((leader, index, arr) => {
+                const rallyTimeCompensation = (maxRallyTime - leader.rallyTime) * 60;
+                const delay = index === arr.length - 1
+                    ? 0
+                    : suicideRallyTime - parseTime(leader.time) + (delayAdjustment * (arr.length - 1 - index)) + rallyTimeCompensation;
 
-                    return { 
-                        name, 
-                        time, 
-                        strength, 
-                        delay: formatTime(delay), 
-                        launchTime: utcLaunchTime, 
-                        impactTime: impactTime,  
-                        isSuicide: index === arr.length - 1 
-                    };
-                })
-                .sort((a, b) => b.strength - a.strength);
+                // Calculate impact time using full launch time
+                const [launchHours, launchMinutes, launchSeconds] = launchTime.split(':').map(Number);
+                const walkingSeconds = parseTime(leader.time);
+                let impactTimeSeconds = launchHours * 3600 + launchMinutes * 60 + launchSeconds + delay + walkingSeconds + (leader.rallyTime * 60);
+                impactTimeSeconds = (impactTimeSeconds + 86400) % 86400; // Ensure time is within 24 hours
+                const impactHours = Math.floor(impactTimeSeconds / 3600).toString().padStart(2, '0');
+                const impactMinutes = Math.floor((impactTimeSeconds % 3600) / 60).toString().padStart(2, '0');
+                const impactSeconds = (impactTimeSeconds % 60).toString().padStart(2, '0');
+
+                const utcLaunchTime = convertUTCTime(launchTime, delay);
+                const impactTime = `${impactHours}:${impactMinutes}:${impactSeconds}`; 
+
+                return { 
+                    name: leader.name, 
+                    time: leader.time, 
+                    strength: leader.strength, 
+                    rallyTime: leader.rallyTime, 
+                    delay: formatTime(delay), 
+                    launchTime: utcLaunchTime, 
+                    impactTime: impactTime,  
+                    isSuicide: index === arr.length - 1 
+                };
+            });
 
             results.sort((a, b) => {
                 // Convert impact times to dates for easy comparison
@@ -476,6 +619,7 @@
             displayResults(results);
         }
 
+        // Updated displayResults function
         function displayResults(results) {
             const resultsContainer = document.getElementById("results");
             resultsContainer.innerHTML = ""; 
@@ -489,11 +633,19 @@
                 const resultItem = document.createElement('div');
                 resultItem.className = `result-item ${result.isSuicide ? 'suicide' : ''}`;
                 resultItem.innerHTML = `
-                    <i class="fas ${icon} me-2"></i>
-                    <span class="bold">${result.name}</span> launches at 
-                    <span class="bold">${result.launchTime}</span> UTC 
-                    - Impacts at <span class="bold">${result.impactTime}</span> UTC 
-                    ${result.isSuicide ? ' (Suicide Rally)' : ''}
+                    <div class="result-icon"><i class="fas ${icon}"></i></div>
+                    <div class="result-content">
+                        <div class="result-name">${result.name}</div>
+                        <div class="result-times">
+                            <span class="launch-time">${result.launchTime}</span>
+                            <span class="arrow">→</span>
+                            <i class="fa-solid fa-burst text-danger me-2"></i> <span class="impact-time">${result.impactTime}</span>
+                        </div>
+                    </div>
+                    <div class="result-details">
+                        ${result.rallyTime}m
+                        ${result.isSuicide ? '<span class="suicide-tag">1st</span>' : ''}
+                    </div>
                 `;
                 resultsContainer.appendChild(resultItem);
             });
@@ -620,17 +772,18 @@
             const leaders = Array.from(document.querySelectorAll('.leader-row')).map(row => ({
                 name: row.querySelector(`input[id^="leaderName"]`).value,
                 time: row.querySelector(`input[id^="leaderTime"]`).value,
-                strength: row.dataset.strength 
+                strength: row.dataset.strength,
+                rallyTime: row.querySelector(`select[id^="leaderRallyTime"]`).value
             }));
             saveState('rallyLeaders', leaders);
         }
 
         function loadLeaderData() {
             const savedLeaders = loadState('rallyLeaders') || [
-                { name: "Alpha", time: "1:15", strength: 5 },
-                { name: "Bravo", time: "3:08", strength: 4 }
+                { name: "Alpha", time: "1:15", strength: 5, rallyTime: "5" },
+                { name: "Bravo", time: "3:08", strength: 4, rallyTime: "5" }
             ];
-            savedLeaders.forEach(leader => addLeader(leader.name, leader.time, leader.strength));
+            savedLeaders.forEach(leader => addLeader(leader.name, leader.time, leader.strength, leader.rallyTime));
         }
 
         function setNextRoundTime() {
@@ -696,7 +849,7 @@
         document.getElementById("main").innerHTML = `
         <div class="row mb-4">
             <div class="col-md-6">
-                <label for="launchTime" class="form-label">Suicide Rally Launch Time (UTC):</label>
+                <label for="launchTime" class="form-label">Rally Launch Time (UTC):</label>
                 <div class="input-group">
                     <button class="btn btn-outline-secondary" type="button" onclick="adjustTime(-5)">-5 min</button>
                     <input type="text" class="form-control" id="launchTime" placeholder="e.g., 14:30:00">
@@ -712,11 +865,11 @@
                 <div id="leader-container">
                 </div>
                 <button class="btn btn-secondary mb-3" onclick="addLeader()"><i class="fas fa-plus"></i> Add Leader</button>
-                <button class="btn btn-success mb-3" onclick="calculateTimings()"><i class="fas fa-calculator"></i> Calculate Timings</button>
+                <button class="btn btn-success mb-3 mx-auto" onclick="calculateTimings()"><i class="fas fa-calculator"></i> Calculate Timings</button>
             </div>
             <div class="col-md-6">
                 <div class="results-container">
-                    <h2 class="mb-3">Launch Schedule:</h2>
+                    <h2 class="mb-3">Timetable</h2>
                     <div id="results"></div> 
                 </div>
             </div>
