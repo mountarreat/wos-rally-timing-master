@@ -40,7 +40,7 @@
             height: 10px;
             margin-top: 10px;
         }
-        .march-distribution {
+        .march-distribution, .chest-distribution {
             font-size: 1.2rem;
             font-weight: bold;
         }
@@ -55,11 +55,32 @@
 </head>
 <body>
     <div class="container py-5">
-        <h1 class="text-center mb-5">
+        <h1 class="text-center mb-3">
             <i class="fas fa-balance-scale me-2 text-primary"></i>
             Resource Boss
-            <small class="text-muted d-block mt-2">Whiteout Survival Calculator</small>
         </h1>
+        <div class="row mb-4">
+            <div class="col-md-6 mx-auto">
+                <div class="input-group">
+                    <label class="input-group-text" for="calculatorType">
+                        <i class="fas fa-calculator me-2"></i>Calculator Type:
+                    </label>
+                    <select class="form-select" id="calculatorType">
+                        <option value="gathering8" selected>Gathering Lv. 8</option>
+                        <option value="gathering7">Gathering Lv. 7</option>
+                        <option value="gathering6">Gathering Lv. 6</option>
+                        <option value="gathering5">Gathering Lv. 5</option>
+                        <option value="gathering4">Gathering Lv. 4</option>
+                        <option value="gathering3">Gathering Lv. 3</option>
+                        <option value="gathering2">Gathering Lv. 2</option>
+                        <option value="gathering1">Gathering Lv. 1</option>
+                        <option disabled>───────────────</option>
+                        <option value="choice10k">Choice Chest 10K</option>
+                        <option value="choice100k">Choice Chest 100K</option>
+                    </select>
+                </div>
+            </div>
+        </div>
         
         <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4 mb-5">
             <div class="col">
@@ -76,7 +97,7 @@
                                 <option value="1000000000">B</option>
                             </select>
                         </div>
-                        <small class="text-muted">Lv. 8 Animal Farm: 14,000,000</small>
+                        <small class="text-muted" id="meatYield">Lv. 8 Animal Farm: 14,000,000</small>
                     </div>
                 </div>
             </div>
@@ -94,7 +115,7 @@
                                 <option value="1000000000">B</option>
                             </select>
                         </div>
-                        <small class="text-muted">Lv. 8 Lumberyard: 14,000,000</small>
+                        <small class="text-muted" id="woodYield">Lv. 8 Lumberyard: 14,000,000</small>
                     </div>
                 </div>
             </div>
@@ -112,7 +133,7 @@
                                 <option value="1000000000">B</option>
                             </select>
                         </div>
-                        <small class="text-muted">Lv. 8 Coal Mine: 2,800,000</small>
+                        <small class="text-muted" id="coalYield">Lv. 8 Coal Mine: 2,800,000</small>
                     </div>
                 </div>
             </div>
@@ -130,7 +151,7 @@
                                 <option value="1000000000">B</option>
                             </select>
                         </div>
-                        <small class="text-muted">Lv. 8 Smelter: 700,000</small>
+                        <small class="text-muted" id="ironYield">Lv. 8 Smelter: 700,000</small>
                     </div>
                 </div>
             </div>
@@ -138,7 +159,7 @@
         
         <div class="row mb-4">
             <div class="col-md-6 mx-auto">
-                <div class="input-group">
+                <div class="input-group" id="marchesGroup">
                     <label class="input-group-text" for="marchesSelect">
                         <i class="fas fa-users me-2"></i>Marches:
                     </label>
@@ -151,6 +172,12 @@
                         <option value="5">5</option>
                         <option value="6">6</option>
                     </select>
+                </div>
+                <div class="input-group d-none" id="chestsGroup">
+                    <label class="input-group-text" for="chestsInput">
+                        <i class="fas fa-box me-2"></i>Available Chests:
+                    </label>
+                    <input type="number" class="form-control" id="chestsInput" placeholder="Enter number of chests">
                 </div>
             </div>
         </div>
@@ -168,14 +195,52 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
+        const resourceLevels = {
+            gathering8: { meat: 14000000, wood: 14000000, coal: 2800000, iron: 700000 },
+            gathering7: { meat: 6000000, wood: 6000000, coal: 1200000, iron: 300000 },
+            gathering6: { meat: 3000000, wood: 3000000, coal: 600000, iron: 150000 },
+            gathering5: { meat: 1200000, wood: 1200000, coal: 240000, iron: 60000 },
+            gathering4: { meat: 600000, wood: 600000, coal: 120000, iron: 30000 },
+            gathering3: { meat: 300000, wood: 300000, coal: 60000, iron: 15000 },
+            gathering2: { meat: 150000, wood: 150000, coal: 30000, iron: 7500 },
+            gathering1: { meat: 70000, wood: 70000, coal: 14000, iron: 3500 },
+            choice10k: { meat: 10000, wood: 10000, coal: 2000, iron: 500 },
+            choice100k: { meat: 100000, wood: 100000, coal: 20000, iron: 5000 }
+        };
+
+        function updateResourceYields() {
+            const calculatorType = document.getElementById('calculatorType').value;
+            const resources = resourceLevels[calculatorType];
+            
+            document.getElementById('meatYield').textContent = `${calculatorType.startsWith('gathering') ? 'Lv. ' + calculatorType.slice(-1) + ' Animal Farm' : 'Choice Chest'}: ${resources.meat.toLocaleString()}`;
+            document.getElementById('woodYield').textContent = `${calculatorType.startsWith('gathering') ? 'Lv. ' + calculatorType.slice(-1) + ' Lumberyard' : 'Choice Chest'}: ${resources.wood.toLocaleString()}`;
+            document.getElementById('coalYield').textContent = `${calculatorType.startsWith('gathering') ? 'Lv. ' + calculatorType.slice(-1) + ' Coal Mine' : 'Choice Chest'}: ${resources.coal.toLocaleString()}`;
+            document.getElementById('ironYield').textContent = `${calculatorType.startsWith('gathering') ? 'Lv. ' + calculatorType.slice(-1) + ' Smelter' : 'Choice Chest'}: ${resources.iron.toLocaleString()}`;
+
+            const marchesGroup = document.getElementById('marchesGroup');
+            const chestsGroup = document.getElementById('chestsGroup');
+
+            if (calculatorType.startsWith('choice')) {
+                marchesGroup.classList.add('d-none');
+                chestsGroup.classList.remove('d-none');
+            } else {
+                marchesGroup.classList.remove('d-none');
+                chestsGroup.classList.add('d-none');
+            }
+        }
+
+        document.getElementById('calculatorType').addEventListener('change', updateResourceYields);
+
         // Function to save data to localStorage
         function saveToLocalStorage() {
             const data = {
+                calculatorType: document.getElementById('calculatorType').value,
                 meat: { value: document.getElementById('meatInput').value, multiplier: document.getElementById('meatMultiplier').value },
                 wood: { value: document.getElementById('woodInput').value, multiplier: document.getElementById('woodMultiplier').value },
                 coal: { value: document.getElementById('coalInput').value, multiplier: document.getElementById('coalMultiplier').value },
                 iron: { value: document.getElementById('ironInput').value, multiplier: document.getElementById('ironMultiplier').value },
-                marches: document.getElementById('marchesSelect').value
+                marches: document.getElementById('marchesSelect').value,
+                chests: document.getElementById('chestsInput').value
             };
             localStorage.setItem('resourceBossData', JSON.stringify(data));
         }
@@ -185,6 +250,7 @@
             const savedData = localStorage.getItem('resourceBossData');
             if (savedData) {
                 const data = JSON.parse(savedData);
+                document.getElementById('calculatorType').value = data.calculatorType || 'gathering8';
                 document.getElementById('meatInput').value = data.meat.value || '';
                 document.getElementById('meatMultiplier').value = data.meat.multiplier || '1';
                 document.getElementById('woodInput').value = data.wood.value || '';
@@ -194,6 +260,8 @@
                 document.getElementById('ironInput').value = data.iron.value || '';
                 document.getElementById('ironMultiplier').value = data.iron.multiplier || '1';
                 document.getElementById('marchesSelect').value = data.marches || 'auto';
+                document.getElementById('chestsInput').value = data.chests || '';
+                updateResourceYields();
             }
         }
 
@@ -201,7 +269,7 @@
         document.addEventListener('DOMContentLoaded', loadFromLocalStorage);
 
         // Add event listeners to save data when inputs change
-        const inputIds = ['meatInput', 'woodInput', 'coalInput', 'ironInput', 'meatMultiplier', 'woodMultiplier', 'coalMultiplier', 'ironMultiplier', 'marchesSelect'];
+        const inputIds = ['calculatorType', 'meatInput', 'woodInput', 'coalInput', 'ironInput', 'meatMultiplier', 'woodMultiplier', 'coalMultiplier', 'ironMultiplier', 'marchesSelect', 'chestsInput'];
         inputIds.forEach(id => document.getElementById(id).addEventListener('change', saveToLocalStorage));
 
         function distributeMarchesOptimally(results, marchesSelected) {
@@ -234,32 +302,35 @@
         }
 
         function calculateBalance() {
+            const calculatorType = document.getElementById('calculatorType').value;
+            const resourceYields = resourceLevels[calculatorType];
+
             const resources = {
                 meat: { 
                     value: parseFloat(document.getElementById('meatInput').value) * parseFloat(document.getElementById('meatMultiplier').value) || 0, 
                     ratio: 1, 
-                    yield: 14000000, 
+                    yield: resourceYields.meat, 
                     icon: 'drumstick-bite', 
                     color: 'danger' 
                 },
                 wood: { 
                     value: parseFloat(document.getElementById('woodInput').value) * parseFloat(document.getElementById('woodMultiplier').value) || 0, 
                     ratio: 1, 
-                    yield: 14000000, 
+                    yield: resourceYields.wood, 
                     icon: 'tree', 
                     color: 'success' 
                 },
                 coal: { 
                     value: parseFloat(document.getElementById('coalInput').value) * parseFloat(document.getElementById('coalMultiplier').value) || 0, 
                     ratio: 5, 
-                    yield: 2800000, 
+                    yield: resourceYields.coal, 
                     icon: 'fire', 
                     color: 'warning' 
                 },
                 iron: { 
                     value: parseFloat(document.getElementById('ironInput').value) * parseFloat(document.getElementById('ironMultiplier').value) || 0, 
                     ratio: 20, 
-                    yield: 700000, 
+                    yield: resourceYields.iron, 
                     icon: 'cubes', 
                     color: 'secondary' 
                 }
@@ -284,13 +355,17 @@
                 };
             }).filter(res => res.diff > 0);
 
-            const marchesSelected = document.getElementById('marchesSelect').value;
-            const marchDistribution = distributeMarchesOptimally(results, marchesSelected);
-
-            displayResults(results, marchDistribution);
+            if (calculatorType.startsWith('choice')) {
+                const availableChests = parseInt(document.getElementById('chestsInput').value) || 0;
+                displayChestResults(results, availableChests);
+            } else {
+                const marchesSelected = document.getElementById('marchesSelect').value;
+                const marchDistribution = distributeMarchesOptimally(results, marchesSelected);
+                displayMarchResults(results, marchDistribution);
+            }
         }
 
-        function displayResults(results, marchDistribution) {
+        function displayMarchResults(results, marchDistribution) {
             const resultsDiv = document.getElementById('results');
             resultsDiv.innerHTML = '';
             resultsDiv.classList.remove('d-none');
@@ -300,7 +375,7 @@
             results.forEach(res => {
                 const marches = marchDistribution.find(m => m.name === res.name).marches;
                 const col = document.createElement('div');
-                col.className = 'col'; // col-md-6 col-lg-3
+                col.className = 'col';
                 col.innerHTML = `
                     <div class="card result-card h-100" style="border-color: var(--bs-${res.color});">
                         <div class="card-body">
@@ -335,6 +410,123 @@
 
             if (resultsDiv.children.length === 0) {
                 resultsDiv.innerHTML = '<div class="col-12"><div class="alert alert-success">Resources are perfectly balanced!</div></div>';
+            }
+        }
+
+        function displayChestResults(results, availableChests) {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = '';
+            resultsDiv.classList.remove('d-none');
+
+            let remainingChests = availableChests;
+            let totalChestsNeeded = 0;
+            let totalGathersNeeded = results.reduce((sum, res) => sum + res.gathersNeeded, 0); // Total theoretical chests needed
+
+            // Check for surplus before calculating proportional distribution
+            if (availableChests >= totalGathersNeeded) {
+                // If surplus, simply display chests needed without proportional distribution
+                const proportionalChests = results.map(res => ({
+                    ...res,
+                    chestsNeeded: Math.ceil(res.gathersNeeded)
+                }));
+
+                proportionalChests.forEach(res => {
+                    const col = document.createElement('div');
+                    col.className = 'col';
+                    col.innerHTML = `
+                        <div class="card result-card h-100" style="border-color: var(--bs-${res.color});">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <h5 class="card-title resource-name m-0">
+                                        <i class="fas fa-${res.icon} text-${res.color} me-2"></i>
+                                        ${res.name.charAt(0).toUpperCase() + res.name.slice(1)}
+                                    </h5>
+                                    <span class="badge bg-${res.color} chest-distribution">
+                                        <i class="fas fa-box me-1"></i>${res.chestsNeeded}
+                                    </span>
+                                </div>
+                                <p class="card-text">
+                                    <strong>Missing:</strong> ${res.diff.toLocaleString()}
+                                    <br>
+                                    <strong>Chests needed:</strong> ${res.gathersNeeded.toFixed(2)}
+                                </p>
+                                <div class="progress">
+                                    <div class="progress-bar bg-${res.color}" role="progressbar" 
+                                         style="width: ${(res.chestsNeeded / totalGathersNeeded) * 100}%;" 
+                                         aria-valuenow="${res.chestsNeeded}" aria-valuemin="0" aria-valuemax="${totalGathersNeeded}">
+                                    </div>
+                                </div>
+                                <small class="text-muted mt-2 d-block">
+                                    ${((res.chestsNeeded / totalGathersNeeded) * 100).toFixed(1)}% of total chests needed
+                                </small>
+                            </div>
+                        </div>
+                    `;
+                    resultsDiv.appendChild(col);
+                });
+            } else {
+                // If deficit, calculate proportional distribution as before
+                const proportionalChests = results.map(res => {
+                    const chestsNeeded = Math.min(remainingChests, Math.ceil((res.gathersNeeded / totalGathersNeeded) * availableChests));
+                    remainingChests -= chestsNeeded;
+                    totalChestsNeeded += chestsNeeded;
+                    return {
+                        ...res,
+                        chestsNeeded
+                    };
+                });
+
+                proportionalChests.forEach(res => {
+                    const col = document.createElement('div');
+                    col.className = 'col';
+                    col.innerHTML = `
+                        <div class="card result-card h-100" style="border-color: var(--bs-${res.color});">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <h5 class="card-title resource-name m-0">
+                                        <i class="fas fa-${res.icon} text-${res.color} me-2"></i>
+                                        ${res.name.charAt(0).toUpperCase() + res.name.slice(1)}
+                                    </h5>
+                                    <span class="badge bg-${res.color} chest-distribution">
+                                        <i class="fas fa-box me-1"></i>${res.chestsNeeded}
+                                    </span>
+                                </div>
+                                <p class="card-text">
+                                    <strong>Missing:</strong> ${res.diff.toLocaleString()}
+                                    <br>
+                                    <strong>Chests needed:</strong> ${res.gathersNeeded.toFixed(2)}
+                                </p>
+                                <div class="progress">
+                                    <div class="progress-bar bg-${res.color}" role="progressbar" 
+                                         style="width: ${(res.chestsNeeded / totalChestsNeeded) * 100}%;" 
+                                         aria-valuenow="${res.chestsNeeded}" aria-valuemin="0" aria-valuemax="${totalChestsNeeded}">
+                                    </div>
+                                </div>
+                                <small class="text-muted mt-2 d-block">
+                                    ${((res.chestsNeeded / totalChestsNeeded) * 100).toFixed(1)}% of available chests
+                                </small>
+                            </div>
+                        </div>
+                    `;
+                    resultsDiv.appendChild(col);
+                });
+            }
+
+            if (resultsDiv.children.length === 0) {
+                resultsDiv.innerHTML = '<div class="col-12"><div class="alert alert-success">Resources are perfectly balanced!</div></div>';
+            } else {
+                const totalNeededCol = document.createElement('div');
+                totalNeededCol.className = 'col-12 mt-3';
+                totalNeededCol.innerHTML = `
+                    <div class="alert alert-info">
+                        <strong>Total chests needed:</strong> ${Math.ceil(totalGathersNeeded)}
+                        <br>
+                        <strong>Available chests:</strong> ${availableChests}
+                        <br>
+                        <strong>${availableChests >= totalGathersNeeded ? 'Surplus' : 'Deficit'}:</strong> ${Math.abs(Math.ceil(availableChests - totalGathersNeeded))}
+                    </div>
+                `;
+                resultsDiv.appendChild(totalNeededCol);
             }
         }
     </script>
