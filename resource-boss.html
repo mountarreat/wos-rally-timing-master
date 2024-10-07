@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resource Boss - Whiteout Survival Calculator</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body { 
+            background-color: #f0f2f5; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .card { 
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border: none;
+            border-radius: 15px;
+            transition: transform 0.3s ease-in-out;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        .resource-icon { 
+            font-size: 2.5rem; 
+            margin-bottom: 0.5rem;
+        }
+        .btn-primary {
+            background-color: #4a6fa5;
+            border-color: #4a6fa5;
+        }
+        .btn-primary:hover {
+            background-color: #3a5982;
+            border-color: #3a5982;
+        }
+        .result-card {
+            background-color: #ffffff;
+            border-left: 5px solid;
+        }
+        .progress {
+            height: 10px;
+            margin-top: 10px;
+        }
+        .march-distribution {
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+        .resource-name {
+            font-size: 1.3rem;
+            font-weight: bold;
+        }
+        .input-group-text {
+            background-color: #e9ecef;
+        }
+    </style>
+</head>
+<body>
+    <div class="container py-5">
+        <h1 class="text-center mb-5">
+            <i class="fas fa-balance-scale me-2 text-primary"></i>
+            Resource Boss
+            <small class="text-muted d-block mt-2">Whiteout Survival Calculator</small>
+        </h1>
+        
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4 mb-5">
+            <div class="col">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <i class="fas fa-drumstick-bite resource-icon text-danger"></i>
+                        <h5 class="card-title">Meat</h5>
+                        <div class="input-group mb-2">
+                            <input type="number" class="form-control" id="meatInput" placeholder="Enter amount">
+                            <select class="form-select" id="meatMultiplier" style="max-width: 80px;">
+                                <option value="1" selected></option>
+                                <option value="1000">K</option>
+                                <option value="1000000">M</option>
+                                <option value="1000000000">B</option>
+                            </select>
+                        </div>
+                        <small class="text-muted">Lv. 8 Animal Farm: 14,000,000</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <i class="fas fa-tree resource-icon text-success"></i>
+                        <h5 class="card-title">Wood</h5>
+                        <div class="input-group mb-2">
+                            <input type="number" class="form-control" id="woodInput" placeholder="Enter amount">
+                            <select class="form-select" id="woodMultiplier" style="max-width: 80px;">
+                                <option value="1" selected></option>
+                                <option value="1000">K</option>
+                                <option value="1000000">M</option>
+                                <option value="1000000000">B</option>
+                            </select>
+                        </div>
+                        <small class="text-muted">Lv. 8 Lumberyard: 14,000,000</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <i class="fas fa-fire resource-icon text-warning"></i>
+                        <h5 class="card-title">Coal</h5>
+                        <div class="input-group mb-2">
+                            <input type="number" class="form-control" id="coalInput" placeholder="Enter amount">
+                            <select class="form-select" id="coalMultiplier" style="max-width: 80px;">
+                                <option value="1" selected></option>
+                                <option value="1000">K</option>
+                                <option value="1000000">M</option>
+                                <option value="1000000000">B</option>
+                            </select>
+                        </div>
+                        <small class="text-muted">Lv. 8 Coal Mine: 2,800,000</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <i class="fas fa-cubes resource-icon text-secondary"></i>
+                        <h5 class="card-title">Iron</h5>
+                        <div class="input-group mb-2">
+                            <input type="number" class="form-control" id="ironInput" placeholder="Enter amount">
+                            <select class="form-select" id="ironMultiplier" style="max-width: 80px;">
+                                <option value="1" selected></option>
+                                <option value="1000">K</option>
+                                <option value="1000000">M</option>
+                                <option value="1000000000">B</option>
+                            </select>
+                        </div>
+                        <small class="text-muted">Lv. 8 Smelter: 700,000</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row mb-4">
+            <div class="col-md-6 mx-auto">
+                <div class="input-group">
+                    <label class="input-group-text" for="marchesSelect">
+                        <i class="fas fa-users me-2"></i>Marches:
+                    </label>
+                    <select class="form-select" id="marchesSelect">
+                        <option value="auto" selected>Auto</option>
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                        <option value="6">6</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        
+        <div class="text-center mb-5">
+            <button class="btn btn-primary btn-lg" onclick="calculateBalance()">
+                <i class="fas fa-calculator me-2"></i>Calculate Balance
+            </button>
+        </div>
+        
+        <div id="results" class="row g-4 d-none">
+            <!-- Results will be dynamically inserted here -->
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Function to save data to localStorage
+        function saveToLocalStorage() {
+            const data = {
+                meat: { value: document.getElementById('meatInput').value, multiplier: document.getElementById('meatMultiplier').value },
+                wood: { value: document.getElementById('woodInput').value, multiplier: document.getElementById('woodMultiplier').value },
+                coal: { value: document.getElementById('coalInput').value, multiplier: document.getElementById('coalMultiplier').value },
+                iron: { value: document.getElementById('ironInput').value, multiplier: document.getElementById('ironMultiplier').value },
+                marches: document.getElementById('marchesSelect').value
+            };
+            localStorage.setItem('resourceBossData', JSON.stringify(data));
+        }
+
+        // Function to load data from localStorage
+        function loadFromLocalStorage() {
+            const savedData = localStorage.getItem('resourceBossData');
+            if (savedData) {
+                const data = JSON.parse(savedData);
+                document.getElementById('meatInput').value = data.meat.value || '';
+                document.getElementById('meatMultiplier').value = data.meat.multiplier || '1';
+                document.getElementById('woodInput').value = data.wood.value || '';
+                document.getElementById('woodMultiplier').value = data.wood.multiplier || '1';
+                document.getElementById('coalInput').value = data.coal.value || '';
+                document.getElementById('coalMultiplier').value = data.coal.multiplier || '1';
+                document.getElementById('ironInput').value = data.iron.value || '';
+                document.getElementById('ironMultiplier').value = data.iron.multiplier || '1';
+                document.getElementById('marchesSelect').value = data.marches || 'auto';
+            }
+        }
+
+        // Call loadFromLocalStorage when the page loads
+        document.addEventListener('DOMContentLoaded', loadFromLocalStorage);
+
+        // Add event listeners to save data when inputs change
+        const inputIds = ['meatInput', 'woodInput', 'coalInput', 'ironInput', 'meatMultiplier', 'woodMultiplier', 'coalMultiplier', 'ironMultiplier', 'marchesSelect'];
+        inputIds.forEach(id => document.getElementById(id).addEventListener('change', saveToLocalStorage));
+
+        function distributeMarchesOptimally(results, marchesSelected) {
+            const totalGathersNeeded = results.reduce((sum, res) => sum + res.gathersNeeded, 0);
+            const maxMarches = marchesSelected === 'auto' ? 6 : parseInt(marchesSelected);
+            
+            // Initial distribution
+            let marchesAssigned = results.map(res => ({
+                name: res.name,
+                marches: Math.floor((res.gathersNeeded / totalGathersNeeded) * maxMarches)
+            }));
+
+            // Distribute remaining marches
+            let assignedMarches = marchesAssigned.reduce((sum, res) => sum + res.marches, 0);
+            let remainingMarches = maxMarches - assignedMarches;
+
+            // Sort results by fractional part of ideal march count, descending
+            const sortedResults = results.map((res, index) => ({
+                index,
+                fractionalPart: ((res.gathersNeeded / totalGathersNeeded) * maxMarches) % 1
+            })).sort((a, b) => b.fractionalPart - a.fractionalPart);
+
+            // Assign remaining marches
+            for (let i = 0; i < remainingMarches; i++) {
+                const indexToIncrement = sortedResults[i % sortedResults.length].index;
+                marchesAssigned[indexToIncrement].marches++;
+            }
+
+            return marchesAssigned;
+        }
+
+        function calculateBalance() {
+            const resources = {
+                meat: { 
+                    value: parseFloat(document.getElementById('meatInput').value) * parseFloat(document.getElementById('meatMultiplier').value) || 0, 
+                    ratio: 1, 
+                    yield: 14000000, 
+                    icon: 'drumstick-bite', 
+                    color: 'danger' 
+                },
+                wood: { 
+                    value: parseFloat(document.getElementById('woodInput').value) * parseFloat(document.getElementById('woodMultiplier').value) || 0, 
+                    ratio: 1, 
+                    yield: 14000000, 
+                    icon: 'tree', 
+                    color: 'success' 
+                },
+                coal: { 
+                    value: parseFloat(document.getElementById('coalInput').value) * parseFloat(document.getElementById('coalMultiplier').value) || 0, 
+                    ratio: 5, 
+                    yield: 2800000, 
+                    icon: 'fire', 
+                    color: 'warning' 
+                },
+                iron: { 
+                    value: parseFloat(document.getElementById('ironInput').value) * parseFloat(document.getElementById('ironMultiplier').value) || 0, 
+                    ratio: 20, 
+                    yield: 700000, 
+                    icon: 'cubes', 
+                    color: 'secondary' 
+                }
+            };
+
+            // Decompress resources
+            const decompressed = Object.entries(resources).map(([key, res]) => ({
+                name: key,
+                decompressedValue: res.value * res.ratio,
+                ...res
+            }));
+
+            const maxValue = Math.max(...decompressed.map(res => res.decompressedValue));
+
+            const results = decompressed.map(res => {
+                const diff = Math.max(0, (maxValue - res.decompressedValue) / res.ratio);
+                const gathersNeeded = diff / res.yield;
+                return {
+                    ...res,
+                    diff,
+                    gathersNeeded
+                };
+            }).filter(res => res.diff > 0);
+
+            const marchesSelected = document.getElementById('marchesSelect').value;
+            const marchDistribution = distributeMarchesOptimally(results, marchesSelected);
+
+            displayResults(results, marchDistribution);
+        }
+
+        function displayResults(results, marchDistribution) {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = '';
+            resultsDiv.classList.remove('d-none');
+
+            const totalMarches = marchDistribution.reduce((sum, res) => sum + res.marches, 0);
+
+            results.forEach(res => {
+                const marches = marchDistribution.find(m => m.name === res.name).marches;
+                const col = document.createElement('div');
+                col.className = 'col'; // col-md-6 col-lg-3
+                col.innerHTML = `
+                    <div class="card result-card h-100" style="border-color: var(--bs-${res.color});">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h5 class="card-title resource-name m-0">
+                                    <i class="fas fa-${res.icon} text-${res.color} me-2"></i>
+                                    ${res.name.charAt(0).toUpperCase() + res.name.slice(1)}
+                                </h5>
+                                <span class="badge bg-${res.color} march-distribution">
+                                    <i class="fas fa-users me-1"></i>${marches}
+                                </span>
+                            </div>
+                            <p class="card-text">
+                                <strong>Missing:</strong> ${res.diff.toLocaleString()}
+                                <br>
+                                <strong>Gathers needed:</strong> ${res.gathersNeeded.toFixed(2)}
+                            </p>
+                            <div class="progress">
+                                <div class="progress-bar bg-${res.color}" role="progressbar" 
+                                     style="width: ${(marches / totalMarches) * 100}%;" 
+                                     aria-valuenow="${marches}" aria-valuemin="0" aria-valuemax="${totalMarches}">
+                                </div>
+                            </div>
+                            <small class="text-muted mt-2 d-block">
+                                ${((marches / totalMarches) * 100).toFixed(1)}% of total marches
+                            </small>
+                        </div>
+                    </div>
+                `;
+                resultsDiv.appendChild(col);
+            });
+
+            if (resultsDiv.children.length === 0) {
+                resultsDiv.innerHTML = '<div class="col-12"><div class="alert alert-success">Resources are perfectly balanced!</div></div>';
+            }
+        }
+    </script>
+</body>
+</html>
